@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Conway's Game of Life</title>
+    </head>
+    <body>
+        <h1>Conway's Game of Life</h1>
+        <div style="display: flex;">
+            <div>
+                <h2>Play Game</h2>
+                <canvas id="canvas_Conway"></canvas>
+            </div>
+            <div>
+                <input type="button" value = "Play" id="play" style="margin: 10px;"><br>
+                <label style="margin: 10px;"for="speed">Speed</label><input type="range" id="speed" min="5" max="20" value="10"><br>
+                <canvas id="chart_of_fatality_rate" width="800"></canvas>
+            </div>
+            
+        </div>
+        
+        <script src="Game_of_Life_like_virus.js"></script>
+        
+        <style>
+            a{text-decoration:none}
+            a:hover{text-decoration:none}
+        </style>
+    </body>
+</html>
