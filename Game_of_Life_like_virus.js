@@ -19,7 +19,7 @@ function draw_square(x,y,f,r,g,b){
         context.strokeRect( x*side, y*side, side, side);
 	    context.strokeStyle = "#7a7a7a";
     }else if(f==2){
-        context.fillStyle = "rgb(0, 0, 0)";
+        context.fillStyle = "rgba(0, 0, 0,0.5)";
         context.fillRect( x*side, y*side, side, side);
     }
     context.closePath();
@@ -145,7 +145,7 @@ function rules(){
                 count_neighbors++;
                 gene_storage.push(arr[i][j-1].Gene);
             }
-            if(arr[i][j].state==0 &&count_neighbors>=3){
+            if(/**/arr[i][j].state==0 &&count_neighbors>=3){
                 next[i][j].state=1;
                 var rand = Math.floor(Math.random() * gene_storage.length);
                 var gene_1=gene_storage[rand];
@@ -158,31 +158,32 @@ function rules(){
                     }else{
                         next[i][j].Gene[l]=gene_2[l];
                     }   
-                }if(Math.floor(Math.random() * 100000)==0){
-                        mutation=Math.floor(Math.random() * 16);
-                        if(next[i][j].Gene[mutation]==0){
-                            next[i][j].Gene[mutation]=1;
-                        }else{
-                            next[i][j].Gene[mutation]=0;
-                        }
-                    }
-            }
-        if(arr[i][j].state==1){
-                if(count_neighbors>=arr[i][j].Gene[0]+arr[i][j].Gene[1]+arr[i][j].Gene[2]+arr[i][j].Gene[3] && count_neighbors<=4+arr[i][j].Gene[4]+arr[i][j].Gene[5]+arr[i][j].Gene[6]+arr[i][j].Gene[7]){
-                    next[i][j].state=1;
-                    next[i][j].Gene=arr[i][j].Gene;
-                }else{
-                    next[i][j].state=0;
-                    next[i][j].Gene=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
                 }
-                if(Math.floor(Math.random() * 100000)==0){
+                if(Math.floor(Math.random() * 100)==0){
                     mutation=Math.floor(Math.random() * 16);
                     if(next[i][j].Gene[mutation]==0){
                         next[i][j].Gene[mutation]=1;
                     }else{
                         next[i][j].Gene[mutation]=0;
                     }
-                } 
+                }
+            }
+            if(arr[i][j].state==1){
+                if(count_neighbors>=(arr[i][j].Gene[0]+arr[i][j].Gene[1]+arr[i][j].Gene[2]+arr[i][j].Gene[3])/2 && count_neighbors<=4+arr[i][j].Gene[4]+arr[i][j].Gene[5]+arr[i][j].Gene[6]+arr[i][j].Gene[7]){
+                    next[i][j].state=1;
+                    next[i][j].Gene=arr[i][j].Gene;
+                }else{
+                    next[i][j].state=0;
+                    next[i][j].Gene=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                }
+                if(Math.floor(Math.random() * 100)==0){
+                    mutation=Math.floor(Math.random() * 16);
+                    if(next[i][j].Gene[mutation]==0){
+                        next[i][j].Gene[mutation]=1;
+                    }else{
+                        next[i][j].Gene[mutation]=0;
+                    }
+                }
                 if(next[i][j].Gene[Math.floor(Math.random() * 8)+8]==1){
                     next[i][j].state=2;
                     next[i][j].Gene=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -193,24 +194,26 @@ function rules(){
     }
 }
 function display_result(){
-    var sum_of_fatality=0,count=0;
+    var sum_of_fatality=0;
     for(var i=0;i<block_number;i++){
         for(var j=0;j<block_number;j++){
             draw_square(i,j,next[i][j].state,
-                64*(arr[i][j].Gene[0]+arr[i][j].Gene[1]+arr[i][j].Gene[2]+arr[i][j].Gene[3]),//r
+                64*(4-(arr[i][j].Gene[0]+arr[i][j].Gene[1]+arr[i][j].Gene[2]+arr[i][j].Gene[3])),//r
                 32*(arr[i][j].Gene[8]+arr[i][j].Gene[9]+arr[i][j].Gene[10]+arr[i][j].Gene[11]+arr[i][j].Gene[12]+arr[i][j].Gene[13]+arr[i][j].Gene[14]+arr[i][j].Gene[15]),//g
                 64*(arr[i][j].Gene[4]+arr[i][j].Gene[5]+arr[i][j].Gene[6]+arr[i][j].Gene[7]));//b
-            if(round<=800 && next[i][j].state==1){
-                sum_of_fatality+=(arr[i][j].Gene[8]+arr[i][j].Gene[9]+arr[i][j].Gene[10]+arr[i][j].Gene[11]+arr[i][j].Gene[12]+arr[i][j].Gene[13]+arr[i][j].Gene[14]+arr[i][j].Gene[15]);
-                count++;
+            if(round<=8000 && next[i][j].state==2){
+                sum_of_fatality++;
             }
         }
     }
-    if(round<=800){
+    if(round<=8000){
         round++;
-        f_ctx.fillStyle = "rgb(255, 0, 0)";
-        f_ctx.fillRect( round, 90-sum_of_fatality*5/count, 1, 1);
-        f_ctx.closePath;
+        if(round%10==0){
+            f_ctx.fillStyle = "rgb(255, 0, 0)";
+            f_ctx.fillRect( round/10, 140-sum_of_fatality*100/(block_number*block_number), 1, 1);
+            f_ctx.closePath;
+        }
+        sum_of_fatality=0;
     }
 }
 function reset_pattern(){
@@ -239,6 +242,7 @@ function clear_array(){
     }
 }
 // start gaming
+set_background();
 var x=document.getElementById("play");
 var running; 
 x.addEventListener("click",
@@ -246,15 +250,16 @@ x.addEventListener("click",
         if(x.value=="Play"){
             set_pattern();
             x.value="Restart";
-            running = setInterval(run_the_game, 120/document.getElementById("speed").value*2);
+            running = setInterval(run_the_game, 120/document.getElementById("speed").value*10);
             round=0;
-            f_ctx.clearRect(0,0,f_ctx.width,f_ctx.height);
+            f_ctx.clearRect(0,0,1000,1000);
         }else{
             clearInterval(running);
+            f_ctx.clearRect(0,0,1000,1000);
             clear_array();
             set_pattern();
-            running = setInterval(run_the_game, 120/document.getElementById("speed").value*2);
+            running = setInterval(run_the_game, 120/document.getElementById("speed").value*10);
             round=0;
-            f_ctx.clearRect(0,0,f_ctx.width,f_ctx.height);
+            
         }
     })
