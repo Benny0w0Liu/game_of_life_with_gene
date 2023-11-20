@@ -1,12 +1,8 @@
 const canvas = document.getElementById("canvas_Conway");  
-const chart_of_fatality_rate = document.getElementById("chart_of_fatality_rate"); 
 const context = canvas.getContext("2d");
-const f_ctx = chart_of_fatality_rate.getContext("2d");
-var length = 10, size = 700, block_number=100,round=0;
+var length = 10, size = 700, block_number=100;
 canvas.width = size;
 canvas.height = size;
-f_ctx.width=800;
-f_ctx.height=100;
 side=size/block_number;
 	
 // draw square
@@ -145,7 +141,7 @@ function rules(){
                 count_neighbors++;
                 gene_storage.push(arr[i][j-1].Gene);
             }
-            if(/**/arr[i][j].state==0 &&count_neighbors>=3){
+            if(/*arr[i][j].state==0 &&*/count_neighbors>=3){
                 next[i][j].state=1;
                 var rand = Math.floor(Math.random() * gene_storage.length);
                 var gene_1=gene_storage[rand];
@@ -159,7 +155,7 @@ function rules(){
                         next[i][j].Gene[l]=gene_2[l];
                     }   
                 }
-                if(Math.floor(Math.random() * 100)==0){
+                if(Math.floor(Math.random() * 10000)==0){
                     mutation=Math.floor(Math.random() * 16);
                     if(next[i][j].Gene[mutation]==0){
                         next[i][j].Gene[mutation]=1;
@@ -167,8 +163,12 @@ function rules(){
                         next[i][j].Gene[mutation]=0;
                     }
                 }
+                if(next[i][j].Gene[Math.floor(Math.random() * 8)+8]==1){
+                    next[i][j].state=2;
+                    next[i][j].Gene=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+                }
             }
-            if(arr[i][j].state==1){
+            else if(arr[i][j].state==1){
                 if(count_neighbors>=(arr[i][j].Gene[0]+arr[i][j].Gene[1]+arr[i][j].Gene[2]+arr[i][j].Gene[3])/2 && count_neighbors<=4+arr[i][j].Gene[4]+arr[i][j].Gene[5]+arr[i][j].Gene[6]+arr[i][j].Gene[7]){
                     next[i][j].state=1;
                     next[i][j].Gene=arr[i][j].Gene;
@@ -176,7 +176,7 @@ function rules(){
                     next[i][j].state=0;
                     next[i][j].Gene=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
                 }
-                if(Math.floor(Math.random() * 100)==0){
+                if(Math.floor(Math.random() * 10000)==0){
                     mutation=Math.floor(Math.random() * 16);
                     if(next[i][j].Gene[mutation]==0){
                         next[i][j].Gene[mutation]=1;
@@ -194,26 +194,14 @@ function rules(){
     }
 }
 function display_result(){
-    var sum_of_fatality=0;
     for(var i=0;i<block_number;i++){
         for(var j=0;j<block_number;j++){
             draw_square(i,j,next[i][j].state,
                 64*(4-(arr[i][j].Gene[0]+arr[i][j].Gene[1]+arr[i][j].Gene[2]+arr[i][j].Gene[3])),//r
                 32*(arr[i][j].Gene[8]+arr[i][j].Gene[9]+arr[i][j].Gene[10]+arr[i][j].Gene[11]+arr[i][j].Gene[12]+arr[i][j].Gene[13]+arr[i][j].Gene[14]+arr[i][j].Gene[15]),//g
                 64*(arr[i][j].Gene[4]+arr[i][j].Gene[5]+arr[i][j].Gene[6]+arr[i][j].Gene[7]));//b
-            if(round<=8000 && next[i][j].state==2){
-                sum_of_fatality++;
-            }
+
         }
-    }
-    if(round<=8000){
-        round++;
-        if(round%10==0){
-            f_ctx.fillStyle = "rgb(255, 0, 0)";
-            f_ctx.fillRect( round/10, 140-sum_of_fatality*100/(block_number*block_number), 1, 1);
-            f_ctx.closePath;
-        }
-        sum_of_fatality=0;
     }
 }
 function reset_pattern(){
@@ -251,15 +239,10 @@ x.addEventListener("click",
             set_pattern();
             x.value="Restart";
             running = setInterval(run_the_game, 120/document.getElementById("speed").value*10);
-            round=0;
-            f_ctx.clearRect(0,0,1000,1000);
         }else{
             clearInterval(running);
-            f_ctx.clearRect(0,0,1000,1000);
             clear_array();
             set_pattern();
             running = setInterval(run_the_game, 120/document.getElementById("speed").value*10);
-            round=0;
-            
         }
     })
