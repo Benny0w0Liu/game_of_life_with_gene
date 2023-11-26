@@ -155,7 +155,7 @@ function rules(){
                         next[i][j].Gene[l]=gene_2[l];
                     }   
                 }
-                if(Math.floor(Math.random() * 10000)==0){
+                if(Math.floor(Math.random() * 10000)==0){//突變
                     mutation=Math.floor(Math.random() * 16);
                     if(next[i][j].Gene[mutation]==0){
                         next[i][j].Gene[mutation]=1;
@@ -163,13 +163,13 @@ function rules(){
                         next[i][j].Gene[mutation]=0;
                     }
                 }
-                if(next[i][j].Gene[Math.floor(Math.random() * 8)+8]==1){
+                if(next[i][j].Gene[Math.floor(Math.random() * 8)+8]==1){//死亡
                     next[i][j].state=2;
                     next[i][j].Gene=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
                 }
             }
             else if(arr[i][j].state==1){
-                if(count_neighbors>=(arr[i][j].Gene[0]+arr[i][j].Gene[1]+arr[i][j].Gene[2]+arr[i][j].Gene[3])/2 && count_neighbors<=4+arr[i][j].Gene[4]+arr[i][j].Gene[5]+arr[i][j].Gene[6]+arr[i][j].Gene[7]){
+                if(count_neighbors>=(arr[i][j].Gene[0]+arr[i][j].Gene[1]+arr[i][j].Gene[2]+arr[i][j].Gene[3])/2 && count_neighbors<=4+arr[i][j].Gene[4]+arr[i][j].Gene[5]+arr[i][j].Gene[6]+arr[i][j].Gene[7]){//生存
                     next[i][j].state=1;
                     next[i][j].Gene=arr[i][j].Gene;
                 }else{
