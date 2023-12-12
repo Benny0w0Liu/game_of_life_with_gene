@@ -64,7 +64,7 @@ function set_pattern(){
         }
     }
 }
-// run the game with those rules
+// run the game with rules
 /*
 每個細胞有兩種狀態 - 存活或死亡，每個細胞與以自身為中心的周圍八格細胞產生互動（如圖，黑色為存活，白色為死亡）
 當前細胞為存活狀態時，當周圍的存活細胞低於2個時（不包含2個），該細胞變成死亡狀態。（模擬生命數量稀少）
@@ -101,7 +101,7 @@ function rules(){
                 if(arr[i][j-1].state==0){
                     count_life++;
                 }
-                if(count_life>=3){
+                if(count_life>=2 ){
                     next[i][j].state=0;
                 }else{
                     next[i][j].state=2;
